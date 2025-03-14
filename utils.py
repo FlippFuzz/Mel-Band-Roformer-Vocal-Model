@@ -80,6 +80,7 @@ def demix_track(config, model, mix, device, first_chunk_time=None):
                 elif i + C >= total_length:
                     window[-fade_size:] = 1
 
+                window = result.to(device)
                 result[..., i:i+length] += x[..., :length] * window[..., :length]
                 counter[..., i:i+length] += window[..., :length]
                 i += step
