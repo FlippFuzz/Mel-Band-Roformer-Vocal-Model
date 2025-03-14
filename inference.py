@@ -55,6 +55,7 @@ def run_folder(model, args, config, device, verbose=False):
             sys.stdout.write(f"Estimated time remaining: {estimated_total_time:.2f} seconds\r")
             sys.stdout.flush()
 
+        device = torch.device('cuda:1')
         res, first_chunk_time = demix_track(config, model, mixture, device, first_chunk_time)
 
         for instr in instruments:
