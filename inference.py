@@ -64,16 +64,17 @@ def run_folder(model, args, config, device, verbose=False):
 
             vocals_path = "{}/{}_{}.wav".format(args.store_dir, os.path.basename(path)[:-4], instr)
             sf.write(vocals_path, vocals_output, sr, subtype='FLOAT')
-
-        vocals_output = res[instruments[0]].T
-        if original_mono:
-            vocals_output = vocals_output[:, 0]
-
-        original_mix, _ = sf.read(path)
-        instrumental = original_mix - vocals_output
-
-        instrumental_path = "{}/{}_instrumental.wav".format(args.store_dir, os.path.basename(path)[:-4])
-        sf.write(instrumental_path, instrumental, sr, subtype='FLOAT')
+        
+        if not args.vocals_only: # User can use the "--vocals_only" flag to skip processing instruments. 
+            vocals_output = res[instruments[0]].T
+            if original_mono:
+                vocals_output = vocals_output[:, 0]
+    
+            original_mix, _ = sf.read(path)
+            instrumental = original_mix - vocals_output
+    
+            instrumental_path = "{}/{}_instrumental.wav".format(args.store_dir, os.path.basename(path)[:-4])
+            sf.write(instrumental_path, instrumental, sr, subtype='FLOAT')
 
     time.sleep(1)
     print("Elapsed time: {:.2f} sec".format(time.time() - start_time))
@@ -87,6 +88,7 @@ def proc_folder(args):
     parser.add_argument("--input_folder", type=str, help="folder with songs to process")
     parser.add_argument("--store_dir", default="", type=str, help="path to store model outputs")
     parser.add_argument("--device_ids", nargs='+', type=int, default=0, help='list of gpu ids')
+    parser.add_argument("--vocals_only", action='store_true', help='Only return vocals')
     if args is None:
         args = parser.parse_args()
     else:
